@@ -28,6 +28,7 @@ SECTIONHACK = 0
 	; Demo startup must be first for section hack to work
 	include	DemoStartup.S
 
+screenWidth	equ	40
 
 _Precalc:
 	; Called as the very first thing, before system shutdown
@@ -35,7 +36,7 @@ _Precalc:
 
 _Exit:
 	; Called after system restore
-	moveq #0,d0
+	moveq	#0,d0
 	rts
 
 _Main:
@@ -46,17 +47,18 @@ _Main:
 	move.l	a1,$dff080
 
 .loop:
-	; Example: Fill screen gradually
-	move.l	VBlank(pc),d0
-	lea	bitplane,a1
-	st.b	(a1,d0.l)
-
 	bra.s	.loop
 
 _Interrupt:
 	; Called by the vblank interrupt.
-	lea	bitplane,a1
-	move.l	a1,$dff0e0
+	lea	bitplanes,a1
+	lea	$dff0e0,a2
+	moveq	#3,d0
+.bitplaneloop:
+	move.l	a1,(a2)
+	lea	screenWidth(a1),a1
+	addq	#4,a2
+	dbra	d0,.bitplaneloop
 
 	rts
 
@@ -65,14 +67,23 @@ _Interrupt:
 copper:
 	dc.l	$008e2c81,$00902cc1
 	dc.l	$00920038,$009400d0
-	dc.l	$01001200,$01020000,$01060000,$010c0011
-	dc.l	$01080000,$010a0000
+	dc.l	$01003200,$01020000,$01060000,$010c0011
+	dc.w	$108,screenWidth*2
+	dc.w	$10a,screenWidth*2
 	dc.l	$01800abc,$01820123
+
+	dc.w	$180,$fff
+	dc.w	$182,$bbb
+	dc.w	$184,$888
+	dc.w	$186,$444
+	dc.w	$188,$000
+	dc.w	$18a,$f00
+
 	dc.l	$01fc0000
 	dc.l	$fffffffe
 
+bitplanes:
+	incbin	"image.raw"
+
 	section	chip,bss_c
 Chip:
-bitplane:
-	ds.b	40*256
-bitplaneEnd:
