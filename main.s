@@ -73,6 +73,6 @@ copper:
 
 	section	chip,bss_c
 Chip:
-	ds.b	40 * 100
 bitplane:
-	ds.b	40 * 256
+	ds.b	40*256
+bitplaneEnd:
