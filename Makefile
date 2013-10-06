@@ -1,4 +1,6 @@
 EXECUTABLE=out
 
-$(EXECUTABLE) : main.s
-	vasmm68k_mot -Fhunkexe -o $@ -nosym main.s
+SOURCE=main.s
+
+$(EXECUTABLE) : $(SOURCE)
+	vasmm68k_mot -showcrit -showopt -Fhunkexe -o $@ -nosym $(SOURCE)
