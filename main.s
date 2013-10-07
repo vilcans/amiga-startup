@@ -29,6 +29,7 @@ SECTIONHACK = 0
 	include	DemoStartup.S
 
 screenWidth	equ	40
+depth	equ	2
 
 _Precalc:
 	; Called as the very first thing, before system shutdown
@@ -53,7 +54,7 @@ _Interrupt:
 	; Called by the vblank interrupt.
 	lea	bitplanes,a1
 	lea	$dff0e0,a2
-	moveq	#3,d0
+	moveq	#depth,d0
 .bitplaneloop:
 	move.l	a1,(a2)
 	lea	screenWidth(a1),a1
@@ -67,23 +68,18 @@ _Interrupt:
 copper:
 	dc.l	$008e2c81,$00902cc1
 	dc.l	$00920038,$009400d0
-	dc.l	$01003200,$01020000,$01060000,$010c0011
-	dc.w	$108,screenWidth*2
-	dc.w	$10a,screenWidth*2
-	dc.l	$01800abc,$01820123
-
-	dc.w	$180,$fff
-	dc.w	$182,$bbb
-	dc.w	$184,$888
-	dc.w	$186,$444
-	dc.w	$188,$000
-	dc.w	$18a,$f00
-
+	dc.w	$0100,(depth<<12)|$200
+	dc.l	$01020000,$01060000,$010c0011
+	dc.w	$108,screenWidth*depth-screenWidth
+	dc.w	$10a,screenWidth*depth-screenWidth
 	dc.l	$01fc0000
+
+	include	"gen/hello-copper.s"
+
 	dc.l	$fffffffe
 
 bitplanes:
-	incbin	"image.raw"
+	incbin	"gen/hello.raw"
 
 	section	chip,bss_c
 Chip:
