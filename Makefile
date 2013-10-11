@@ -14,3 +14,8 @@ $(EXECUTABLE)-nodebug : $(DEPENDENCIES)
 
 gen/hello.raw gen/hello-copper.s: assets/hello.png bitplanify.py
 	python bitplanify.py $< --copper=gen/hello-copper.s gen/hello.raw
+
+clean:
+	rm -r gen/*
+
+.PHONY: clean
