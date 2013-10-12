@@ -59,15 +59,16 @@ if img.palette.mode != 'RGB':
     print 'Unexpected palette mode:', img.palette.mode
     sys.exit(1)
 
-#print 'Palette size:', len(img.palette.data) / 3
 number_of_colors = len(img.palette.palette) / 3
+if verbose:
+    print 'Palette size:', number_of_colors
 if not bit_depth:
     bit_depth = int(math.log(number_of_colors - 1) / math.log(2)) + 1
     if verbose:
         print 'Detected bit depth:', bit_depth
 
 palette = []
-for color_index in range(number_of_colors):
+for color_index in range(min(number_of_colors, 1 << bit_depth)):
     r, g, b = [ord(c) for c in img.palette.palette[color_index * 3:(color_index + 1) * 3]]
     rgb = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4)
     palette.append(rgb)
