@@ -1,5 +1,10 @@
 # Amiga-startup
 
-Base code for demos etc.
+Base code and build process for demos etc.
 
-Taken from Blueberry's [BlueBerryDemoStartup](http://ada.untergrund.net/forum/index.php?action=vthread&forum=4&topic=444)
+Can convert images to Amiga bitmaps.
+
+Supports defensive programming using asserts in debug builds.
+
+System shutdown and demo startup were taken from Blueberry's
+[BlueBerryDemoStartup](http://ada.untergrund.net/forum/index.php?action=vthread&forum=4&topic=444)
