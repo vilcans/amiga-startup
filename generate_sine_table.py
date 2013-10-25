@@ -8,11 +8,18 @@ import sys
 import math
 import argparse
 
+masks = {
+    'b': 0xff,
+    'w': 0xffff,
+    'l': 0xffffffff
+}
+
 parser = argparse.ArgumentParser(description='Generate a premultiplied integer only sine table')
 parser.add_argument('nr_of_values', type=int, help='Number of values to create')
 parser.add_argument('premultiplier', type=int, help='Premultiplier to use')
 parser.add_argument('offset', type=int, help='Offset to use')
 parser.add_argument('out', help='File to write sine table to')
+parser.add_argument('--size', help='Size per value: b, w, or l', action="store")
 parser.add_argument('--f1', help='Use y = ((sin(x) + 1) / 2) ^ a', action="store_true")
 parser.add_argument('--post', type=int, help='Multiply result by this value', default=1)
 
@@ -27,18 +34,22 @@ f1 = args.f1
 
 type = ''
 
-if (premultiplier + offset) * postmultiplier < 2**8:
-    # Should fit in a byte
-    type = 'dc.b'
-elif (premultiplier + offset) * postmultiplier < 2**16:
-    # Should fit in a word
-    type = 'dc.w'
-elif (premultiplier + offset) * postmultiplier < 2**32:
-    # Should fit in a longword
-    type = 'dc.l'
+if args.size:
+    type = args.size
 else:
-    print 'Result will be to large. Try with a smaller premultiplier or smaller offset.'
-    exit
+    if (premultiplier + offset) * postmultiplier < 2**8:
+        # Should fit in a byte
+        type = 'b'
+    elif (premultiplier + offset) * postmultiplier < 2**16:
+        # Should fit in a word
+        type = 'w'
+    elif (premultiplier + offset) * postmultiplier < 2**32:
+        # Should fit in a longword
+        type = 'l'
+    else:
+        print 'Result will be to large. Try with a smaller premultiplier or smaller offset.'
+        sys.exit(1)
+mask = masks[type]
 
 two_pi = math.pi * 2;
 increment = two_pi / nr_of_values
@@ -53,9 +64,9 @@ with open(output_file, 'w') as out:
             current_sine = math.pow(((math.sin(current) + 1) / 2), 3) * premultiplier + offset
         else:
             current_sine = math.sin(current) * premultiplier + offset
-        current_int = int(round(current_sine)) * postmultiplier
+        current_int = (int(round(current_sine)) * postmultiplier) & mask
         if newline_counter == 0:
-            out.write('\t%s %d' % (type, current_int))
+            out.write('\tdc.%s %d' % (type, current_int))
         else:
             out.write(', %d' % current_int)
         newline_counter += 1
