@@ -29,7 +29,7 @@ SECTIONHACK = 0
 	include	DemoStartup.S
 
 screenWidth	equ	40
-depth	equ	2
+depth	equ	4
 
 _Precalc:
 	; Called as the very first thing, before system shutdown
