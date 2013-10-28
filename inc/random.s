@@ -4,10 +4,9 @@
 	; for x in 0..255
 	; See http://en.wikipedia.org/wiki/Linear_feedback_shift_register
 initRandom:
-	lea	xorTable(pc),a0
+	lea	linearFeedbackTable(pc),a0
 	moveq	#0,d3
 .loop:
-	move.b	#$55,(a0)
 	move	d3,d0  ; temp lsfr and bit result in bit 0
 	move	d0,d1
 	lsr	#2,d1  ; lfsr >> 2
@@ -24,21 +23,21 @@ initRandom:
 	bne.s	.loop
 	rts
 
-xorTable:
+linearFeedbackTable:
 	dcb.b	256
 
 ; Gets the next random number.
 ; Assumes d0 contains the previous number
-; and that a0 points to xorTable.
+; and that a0 points to linearFeedbackTable.
 ; Destroys d1.w.
 ; Example initialization:
-;       lea	xorTable(pc),a0
-;	move	#$ace1,d2
+;       lea	linearFeedbackTable(pc),a0
+;       move #$ace1,d0
 
 getRandom	macro
-	moveq	#$7f,d1
-	and	d0,d1
-	move.b	(a0,d1),d1
+	sub	d1,d1
+	move.b	d0,d1
+	move.b	(a0,d1.w),d1
 	roxr	#1,d1
 	roxr	#1,d0
 	endm
