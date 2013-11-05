@@ -17,5 +17,6 @@ gen/hello.raw gen/hello-copper.s: assets/hello.png bitplanify.py
 
 clean:
 	rm -r gen/*
+	rm -f $(EXECUTABLE)
 
 .PHONY: clean
