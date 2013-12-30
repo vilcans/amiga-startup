@@ -75,7 +75,7 @@ for color_index in range(min(number_of_colors, 1 << bit_depth)):
 
 width, height = img.size
 if (width & 7) != 0:
-    print 'Width is not divisable by 16:', width
+    print 'Width is not divisable by 8:', width
     sys.exit(1)
 
 byte_width = (width + 7) // 8
