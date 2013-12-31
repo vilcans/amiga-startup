@@ -44,18 +44,16 @@ def write_bitplane(file, image, bitplane_index):
     image.bitplanes[bitplane_index].write(file)
 
 
-def to_amiga_colors(char_palette):
+def to_amiga_colors(palette):
     """
     Convert 24 bit colors to Amiga 12 bit colors.
-    char_palette is a sequence of palette bytes as characters
-    (3 characters per color).
-
+    palette is a sequence of integers: [r, g, b, ...]
     """
-    number_of_colors = len(char_palette) // 3
-    palette = []
+    number_of_colors = len(palette) // 3
+    amiga_colors = []
     for color_index in xrange(number_of_colors):
-        r, g, b = [ord(c) for c in char_palette[color_index * 3:(color_index + 1) * 3]]
+        r, g, b = [c for c in palette[color_index * 3:(color_index + 1) * 3]]
         rgb = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4)
-        palette.append(rgb)
+        amiga_colors.append(rgb)
 
-    return palette
+    return amiga_colors

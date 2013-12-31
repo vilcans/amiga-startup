@@ -21,20 +21,18 @@ def main(args):
         print 'Image is not palette-based'
         sys.exit(1)
 
-    if img.palette.mode != 'RGB':
-        print 'Unexpected palette mode:', img.palette.mode
-        sys.exit(1)
-
-    number_of_colors = len(img.palette.palette) / 3
+    palette = img.getpalette()
+    max_index = img.getextrema()[1]
     if verbose:
-        print 'Palette size:', number_of_colors
+        print 'Maximum palette index used:', number_of_colors
+    number_of_colors = max_index + 1
     if not bit_depth:
         bit_depth = int(math.log(number_of_colors - 1) / math.log(2)) + 1
         if verbose:
             print 'Detected bit depth:', bit_depth
 
-    palette = to_amiga_colors(
-        img.palette.palette[:min(number_of_colors, 1 << bit_depth) * 3]
+    amiga_palette = to_amiga_colors(
+        palette[:min(number_of_colors, 1 << bit_depth) * 3]
     )
 
     width, height = img.size
@@ -57,7 +55,7 @@ def main(args):
 
     if args.copper:
         with open(args.copper, 'w') as out:
-            for index, rgb in enumerate(palette):
+            for index, rgb in enumerate(amiga_palette):
                 out.write('\tdc.w\t$%x,$%03x\n' % (0x180 + index * 2, rgb))
 
 if __name__ == '__main__':
