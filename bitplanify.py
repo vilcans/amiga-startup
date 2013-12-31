@@ -21,18 +21,15 @@ def main(args):
         print 'Image is not palette-based'
         sys.exit(1)
 
-    palette = img.getpalette()
-    max_index = img.getextrema()[1]
-    if verbose:
-        print 'Maximum palette index used:', number_of_colors
-    number_of_colors = max_index + 1
+    palette = img.getpalette()  # always 256*3 values
     if not bit_depth:
-        bit_depth = int(math.log(number_of_colors - 1) / math.log(2)) + 1
+        max_index = img.getextrema()[1]
+        bit_depth = int(math.log(max_index) / math.log(2)) + 1
         if verbose:
-            print 'Detected bit depth:', bit_depth
+            print 'Maximum palette index used: %d: assuming bit depth %d' % (max_index, bit_depth)
 
     amiga_palette = to_amiga_colors(
-        palette[:min(number_of_colors, 1 << bit_depth) * 3]
+        palette[:(1 << bit_depth) * 3]
     )
 
     width, height = img.size
